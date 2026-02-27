@@ -10,7 +10,7 @@ export const getFilename = async () => {
 
 export const createMigration = async () => {
   await pool.query(`
-        CREATE TABLE IF EXISTS migration
+        CREATE TABLE IF NOT EXISTS migration
         (
             migration_id SERIAL NOT NULL PRIMARY KEY,
             filename TEXT UNIQUE NOT NULL,

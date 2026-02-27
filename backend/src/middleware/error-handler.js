@@ -7,6 +7,7 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   if (err instanceof ResponseError) {
+    console.error(err);
     return res
       .status(err.statusCode)
       .json({
@@ -14,6 +15,7 @@ export const errorHandler = (err, req, res, next) => {
       })
       .end();
   } else {
+    console.error(err);
     return res
       .status(500)
       .json({

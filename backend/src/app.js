@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { requestLogger } from "./middleware/request-logger.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { accountRouter } from "./routes/account-route.js";
+import { blogRouter } from "./routes/blog.route.js";
 
 export const app = express();
 
@@ -15,5 +16,6 @@ app.use(cookieParser());
 app.use(requestLogger);
 
 app.use("/account", accountRouter);
+app.use("/blog", blogRouter);
 
 app.use(errorHandler);

@@ -142,12 +142,25 @@ export const refresh = async (token) => {
 };
 
 export const logout = async (token) => {
-  const existingToken = await findToken(pool, token);
-  if (!existingToken) {
-    throw new ResponseError(401, "Token tidak valid");
-  }
+  const client = await pool.connect();
 
-  await deleteToken(pool, token);
+  try {
+    await client.query("BEGIN");
+
+    const existingToken = await findToken(client, token);
+    if (!existingToken) {
+      throw new ResponseError(401, "Token tidak valid");
+    }
+
+    await deleteToken(client, token);
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
 };
 
 export const editAccount = async (request, accountId) => {

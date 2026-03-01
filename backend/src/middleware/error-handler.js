@@ -1,5 +1,6 @@
 import { logger } from "../logger/logger.js";
 import { ResponseError } from "../error/ResponseError.js";
+import { sanitizeBody } from "../utils/sanitize-body.js";
 
 export const errorHandler = (err, req, res, next) => {
   const statusCode = err instanceof ResponseError ? err.statusCode : 500;

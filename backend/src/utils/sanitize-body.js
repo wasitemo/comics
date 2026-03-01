@@ -1,4 +1,4 @@
-const sanitizeBody = (body) => {
+export const sanitizeBody = (body) => {
   if (!body) {
     return body;
   }

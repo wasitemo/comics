@@ -1,5 +1,5 @@
 import pg from "pg";
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -20,8 +20,8 @@ export const connectDB = async () => {
     await pool.query("SELECT 1");
     console.log("DATABASE CONNECTED");
   } catch (err) {
-    console.error(err);
     console.log(`DATABASE CONNECTION ERROR: ${err}`);
+    throw err;
   }
 };
 
@@ -35,32 +35,36 @@ const getExceutedMigration = async () => {
 };
 
 export const runMigration = async () => {
+  const client = await pool.connect();
   try {
     await createMigrationTable();
 
     const migrationPath = path.join(__dirname, "../migrations");
-    const files = fs.readdirSync(migrationPath).sort();
+    const files = await fs.readdir(migrationPath);
     const executedMigration = await getExceutedMigration();
 
     for (const file of files) {
       if (!executedMigration.includes(file)) {
         const filePath = path.join(migrationPath, file);
-        const sql = fs.readFileSync(filePath, "utf-8");
+        const sql = await fs.readFile(filePath, "utf-8");
 
         console.log(`RUNNING MIGRATION FILE: ${file}`);
 
-        await pool.query("BEGIN");
+        try {
+          await client.query("BEGIN");
 
-        await pool.query(sql);
-        await insertFilename(file);
+          await client.query(sql);
+          await insertFilename(client, file);
 
-        await pool.query("COMMIT");
-        console.log(`MIGRATION SUCCESS: ${file}`);
+          await client.query("COMMIT");
+          console.log(`MIGRATION SUCCESS: ${file}`);
+        } catch (err) {
+          await client.query("ROLLBACK");
+          throw err;
+        }
       }
     }
-  } catch (err) {
-    await pool.query("ROLLBACK");
-    console.error(`Migration failed: ${err}`);
-    process.exit(1);
+  } finally {
+    client.release();
   }
 };

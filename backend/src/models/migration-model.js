@@ -19,6 +19,8 @@ export const createMigration = async () => {
     `);
 };
 
-export const insertFilename = async (filename) => {
-  await pool.query("INSERT INTO migration (filename) VALUES ($1)", [filename]);
+export const insertFilename = async (client, filename) => {
+  await client.query("INSERT INTO migration (filename) VALUES ($1)", [
+    filename,
+  ]);
 };

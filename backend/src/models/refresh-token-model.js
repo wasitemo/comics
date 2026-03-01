@@ -1,20 +1,18 @@
-import { pool } from "../config/database.js";
-
 // MAIN QUERY
-export const addToken = async (token, accountId) => {
-  await pool.query(
+export const addToken = async (db, token, accountId) => {
+  await db.query(
     "INSERT INTO refresh_token (token, account_id) VALUES ($1, $2)",
     [token, accountId],
   );
 };
 
-export const deleteToken = async (token) => {
-  await pool.query("DELETE FROM refresh_token WHERE token = $1", [token]);
+export const deleteToken = async (db, token) => {
+  await db.query("DELETE FROM refresh_token WHERE token = $1", [token]);
 };
 
 // UTIL QUERY
-export const findToken = async (token) => {
-  const query = await pool.query(
+export const findToken = async (db, token) => {
+  const query = await db.query(
     "SELECT token FROM refresh_token WHERE token = $1",
     [token],
   );

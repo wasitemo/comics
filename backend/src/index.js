@@ -1,57 +1,57 @@
 import "dotenv/config";
-import express from "express";
-import bodyParser from "body-parser";
-import cookieParser from "cookie-parser";
 
 import { logger } from "./logger/logger.js";
-import { requestLogger } from "./middleware/request-logger.js";
-import { errorHandler } from "./middleware/error-handler.js";
-import { accountRouter } from "./routes/account-route.js";
-import { connectDB, runMigration } from "../src/config/database.js";
-
-const app = express();
-
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(cookieParser());
-
-app.use(requestLogger);
-app.use("/account", accountRouter);
-app.use(errorHandler);
+import { app } from "./app.js";
+import { connectDB, runMigration, pool } from "../src/config/database.js";
 
 let server;
+
+process.on("uncaughtException", (err) => {
+  logger.error("UNCHAUGHT EXCEPTION ", {
+    message: err.message,
+    stack: err.stack,
+  });
+
+  process.exit(1);
+});
+
+process.on("unhandledRejection", (reason) => {
+  logger.error("UNHANDLED REJECTION ", { reason });
+
+  process.exit(1);
+});
 
 const start = async () => {
   try {
     await connectDB();
     await runMigration();
 
-    app.listen(process.env.PORT, () => {
-      console.log(`Server running on port ${process.env.PORT}`);
+    server = app.listen(process.env.PORT, () => {
+      logger.info(`Server running on port ${process.env.PORT}`);
     });
   } catch (err) {
-    logger.error("FAILED TO START APPLICATION ", err);
+    logger.error("FAILED TO START APPLICATION ", {
+      message: err.message,
+      stack: err.stack,
+    });
+
     process.exit(1);
   }
 };
 
 start();
 
-process.on("uncaughtException", (err) => {
-  logger.error("UNCHAUGHT EXCEPTION ", err);
-  shutdown();
-});
+process.on("SIGTERM", gracefullShutdown);
+process.on("SIGINT", gracefullShutdown);
 
-process.on("unhandledRejection", (err) => {
-  logger.error("UNHANDLED REJECTION ", err);
-  shutdown();
-});
+async function gracefullShutdown() {
+  logger.info("Shutting down server");
 
-function shutdown() {
   if (server) {
-    server.close(() => {
-      logger.info("Shutting down gracefully...");
-      process.exit(1);
+    server.close(async () => {
+      await pool.end();
+      logger.info("Server closed gracefully");
+      process.exit(0);
     });
   } else {
     process.exit();

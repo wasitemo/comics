@@ -3,6 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
+import { logger } from "../logger/logger.js";
 import {
   getFilename,
   createMigration,
@@ -18,9 +19,8 @@ export const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 export const connectDB = async () => {
   try {
     await pool.query("SELECT 1");
-    console.log("DATABASE CONNECTED");
+    logger.info("DATABASE CONNECTED");
   } catch (err) {
-    console.log(`DATABASE CONNECTION ERROR: ${err}`);
     throw err;
   }
 };
@@ -48,7 +48,7 @@ export const runMigration = async () => {
         const filePath = path.join(migrationPath, file);
         const sql = await fs.readFile(filePath, "utf-8");
 
-        console.log(`RUNNING MIGRATION FILE: ${file}`);
+        logger.info(`RUNNING MIGRATION FILE: ${file}`);
 
         try {
           await client.query("BEGIN");
@@ -57,7 +57,7 @@ export const runMigration = async () => {
           await insertFilename(client, file);
 
           await client.query("COMMIT");
-          console.log(`MIGRATION SUCCESS: ${file}`);
+          logger.info(`MIGRATION SUCCESS: ${file}`);
         } catch (err) {
           await client.query("ROLLBACK");
           throw err;

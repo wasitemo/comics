@@ -1,8 +1,6 @@
-import { pool } from "../config/database.js";
-
 // MAIN QUERY
-export const getAccount = async (limit, offset) => {
-  const query = await pool.query(
+export const getAccount = async (db, limit, offset) => {
+  const query = await db.query(
     `
         SELECT
         account_id,
@@ -21,8 +19,18 @@ export const getAccount = async (limit, offset) => {
   return result;
 };
 
-export const addAccount = async (name, email, password, status) => {
-  await pool.query(
+export const getAccountById = async (db, accountId) => {
+  const query = await db.query(
+    "SELECT account_id, name, email, password, status FROM account WHERE account_id = $1",
+    [accountId],
+  );
+  const result = query.rows[0];
+
+  return result;
+};
+
+export const addAccount = async (db, name, email, password, status) => {
+  await db.query(
     `
         INSERT INTO account
         (name, email, password, status)
@@ -33,10 +41,10 @@ export const addAccount = async (name, email, password, status) => {
   );
 };
 
-export const updateAccount = async (data, accountId) => {
+export const updateAccount = async (db, data, accountId) => {
   const { name, email, password, status } = data;
 
-  await pool.query(
+  await db.query(
     `
         UPDATE account
         SET
@@ -51,10 +59,11 @@ export const updateAccount = async (data, accountId) => {
 };
 
 // UTIL QUERY
-export const findAccountByEmail = async (email) => {
-  const query = await pool.query(
+export const findAccountByEmail = async (db, email) => {
+  const query = await db.query(
     `
         SELECT
+        account_id,
         email,
         password,
         status
@@ -68,18 +77,8 @@ export const findAccountByEmail = async (email) => {
   return result;
 };
 
-export const findAccountById = async (accountId) => {
-  const query = await pool.query(
-    "SELECT account_id, name, email, password, status FROM account WHERE account_id = $1",
-    [accountId],
-  );
-  const result = query.rows[0];
-
-  return result;
-};
-
-export const getTotalAccount = async () => {
-  const query = await pool.query(`
+export const getTotalAccount = async (db) => {
+  const query = await db.query(`
         SELECT COUNT(*)
         FROM (
             SELECT

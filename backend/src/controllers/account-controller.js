@@ -1,5 +1,6 @@
 import {
   showAccount,
+  showAccountById,
   showTotalAccount,
   register,
   login,
@@ -22,6 +23,20 @@ export const presentAccount = async (req, res, next) => {
       limit,
       total_data: parseInt(total.count),
       total_page: Math.ceil(total.count / limit),
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const presentAccountById = async (req, res, next) => {
+  try {
+    let accountId = parseInt(req.params.account_id);
+    const result = await showAccountById(accountId);
+
+    return res.status(200).json({
+      status: 200,
       data: result,
     });
   } catch (err) {

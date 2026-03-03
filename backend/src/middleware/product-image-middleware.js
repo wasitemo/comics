@@ -15,4 +15,4 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-export const blogImage = multer({ storage, fileFilter });
+export const productImage = multer({ storage, fileFilter });

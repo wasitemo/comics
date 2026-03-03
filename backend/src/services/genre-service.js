@@ -65,6 +65,8 @@ export const editGenre = async (request, accountId, genreId) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };
 
@@ -85,5 +87,7 @@ export const removeGenre = async (genreId) => {
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
+  } finally {
+    client.release();
   }
 };

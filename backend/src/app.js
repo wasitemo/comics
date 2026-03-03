@@ -7,6 +7,7 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { accountRouter } from "./routes/account-route.js";
 import { blogRouter } from "./routes/blog.route.js";
 import { genreRouter } from "./routes/genre-route.js";
+import { productRouter } from "./routes/product-route.js";
 
 export const app = express();
 
@@ -19,5 +20,6 @@ app.use(requestLogger);
 app.use("/account", accountRouter);
 app.use("/blog", blogRouter);
 app.use("/genre", genreRouter);
+app.use("/product", productRouter);
 
 app.use(errorHandler);

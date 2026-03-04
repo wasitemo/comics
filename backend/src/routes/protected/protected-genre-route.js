@@ -1,13 +1,13 @@
 import express from "express";
 
-import { authentication } from "../middleware/auth-middleware.js";
+import { authentication } from "../../middleware/auth-middleware.js";
 import {
   presentGenre,
   presentGenreById,
   newGenre,
   changeGenre,
   eraseGenre,
-} from "../controllers/genre-controller.js";
+} from "../../controllers/genre-controller.js";
 
 export const genreRouter = express.Router();
 

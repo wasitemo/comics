@@ -79,3 +79,16 @@ export const getTotalGenre = async (db) => {
 
   return result;
 };
+
+export const getGenreAndId = async (db) => {
+  const query = await db.query(`
+    SELECT 
+    genre_id,
+    genre
+    FROM genre
+    ORDER BY genre_id ASC  
+  `);
+  const result = query.rows;
+
+  return result;
+};

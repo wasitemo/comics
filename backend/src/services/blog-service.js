@@ -10,6 +10,7 @@ import {
   getBlog,
   getBlogById,
   addBlog,
+  updateBlogImage,
   updateBlog,
   deleteBlog,
   getTotalBlog,
@@ -43,47 +44,78 @@ export const showTotalBlog = async () => {
 };
 
 export const saveBlog = async (request, file, accountId) => {
-  const blog = validation(addBlogValidation, request);
+  let blogResult;
 
-  if (!file) {
-    throw new ResponseError(400, "Image wajib diupload");
+  try {
+    const blog = validation(addBlogValidation, request);
+
+    if (!file) {
+      throw new ResponseError(400, "Image wajib diupload");
+    }
+
+    blogResult = await addBlog(
+      pool,
+      accountId,
+      blog.blog_title,
+      blog.blog_content,
+    );
+  } catch (err) {
+    throw err;
   }
 
-  const fileStr = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
-  const uploadImage = await cloudinary.uploader.upload(fileStr, {
-    folder: "blog_image",
-    transformation: [
-      {
-        width: 300,
-        heigh: 300,
-      },
-    ],
-  });
-  await addBlog(
-    pool,
-    accountId,
-    blog.blog_title,
-    blog.blog_content,
-    uploadImage.public_id,
-    uploadImage.secure_url,
-  );
+  try {
+    const fileStr = `data:${file.mimetype};base64,${file.buffer.toString("base64")}`;
+    const uploadImage = await cloudinary.uploader.upload(fileStr, {
+      folder: "blog_image",
+    });
+
+    await updateBlogImage(
+      pool,
+      uploadImage.public_id,
+      uploadImage.secure_url,
+      blogResult.blog_id,
+    );
+  } catch (err) {
+    await deleteBlog(pool, blogResult.blog_id);
+    throw err;
+  }
 };
 
 export const editBlog = async (request, file, blogId, accountId) => {
   const client = await pool.connect();
+  let existingBlog;
+  let updateBlogResult;
 
   try {
     await client.query("BEGIN");
 
+    existingBlog = await getBlogById(client, blogId);
+
     const blog = validation(updateBlogValidation, request);
-    const existingBlog = await getBlogById(client, blogId);
 
     if (!existingBlog) {
       throw new ResponseError(404, "Data blog tidak ditemukan");
     }
 
-    let uploadImgId;
-    let uploadImgUrl;
+    const data = {
+      account_id: accountId ?? existingBlog.account_id,
+      blog_title: blog.blog_title ?? existingBlog.blog_title,
+      blog_content: blog.blog_content ?? existingBlog.blog_content,
+    };
+
+    updateBlogResult = await updateBlog(client, data, blogId);
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
+    client.release();
+  }
+
+  try {
+    let uploadImgId = existingBlog.blog_image_id;
+    let uploadImgUrl = existingBlog.blog_image_url;
     let uploadImage;
 
     if (file && existingBlog.blog_image_id) {
@@ -93,36 +125,19 @@ export const editBlog = async (request, file, blogId, accountId) => {
 
       uploadImage = await cloudinary.uploader.upload(fileStr, {
         folder: "blog_image",
-        transformation: [
-          {
-            width: 300,
-            heigh: 300,
-          },
-        ],
       });
-
       uploadImgId = uploadImage.public_id;
       uploadImgUrl = uploadImage.secure_url;
-    } else {
-      uploadImgId = existingBlog.blog_image_id;
-      uploadImgUrl = existingBlog.blog_image_url;
     }
 
-    const data = {
-      account_id: accountId ?? existingBlog.account_id,
-      blog_title: blog.blog_title ?? existingBlog.blog_title,
-      blog_content: blog.blog_content ?? existingBlog.blog_content,
-      blog_image_id: uploadImgId,
-      blog_image_url: uploadImgUrl,
-    };
-    await updateBlog(client, data, blogId);
-
-    await client.query("COMMIT");
+    await updateBlogImage(
+      pool,
+      uploadImgId,
+      uploadImgUrl,
+      updateBlogResult.blog_id,
+    );
   } catch (err) {
-    await client.query("ROLLBACK");
     throw err;
-  } finally {
-    client.release();
   }
 };
 

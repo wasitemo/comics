@@ -3,6 +3,7 @@ import { ResponseError } from "../error/ResponseError.js";
 import { validation } from "../validations/validate.js";
 import cloudinary from "../utils/cloudinary.js";
 import { getGenreById } from "../models/genre-model.js";
+import { getGenreAndId } from "../models/genre-model.js";
 import {
   addProductValidation,
   upateProductValidation,
@@ -45,6 +46,15 @@ export const showTotalProduct = async () => {
   const result = await getTotalProduct(pool);
   if (!result) {
     throw new ResponseError(404, "Data product tidak ditemukan");
+  }
+
+  return result;
+};
+
+export const showGenreAndId = async () => {
+  const result = await getGenreAndId(pool);
+  if (result.length === 0) {
+    throw new ResponseError(404, "Data genre tidak ditemukan");
   }
 
   return result;

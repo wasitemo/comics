@@ -1,6 +1,7 @@
 import {
   showProduct,
   showProductById,
+  showGenreAndId,
   saveProduct,
   editProduct,
   removeProduct,
@@ -32,6 +33,19 @@ export const presentProductById = async (req, res, next) => {
   try {
     let productId = parseInt(req.params.product_id);
     const result = await showProductById(productId);
+
+    return res.status(200).json({
+      status: 200,
+      data: result,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const presentGenreAndId = async (req, res, next) => {
+  try {
+    const result = await showGenreAndId();
 
     return res.status(200).json({
       status: 200,

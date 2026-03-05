@@ -21,7 +21,7 @@ export const getAccount = async (db, limit, offset) => {
 
 export const getAccountById = async (db, accountId) => {
   const query = await db.query(
-    "SELECT account_id, name, email, password, status FROM account WHERE account_id = $1",
+    "SELECT account_id, name, email, status FROM account WHERE account_id = $1",
     [accountId],
   );
   const result = query.rows[0];

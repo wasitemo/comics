@@ -65,8 +65,8 @@ export const loginAccount = async (req, res, next) => {
 
     res.cookie("token", refresh_token, {
       httpOnly: true,
-      secure: false,
-      samsite: "lax",
+      secure: true,
+      samsite: "none",
       maxAge: parseInt(process.env.MAX_AGE_COOKIE),
     });
     return res.status(200).json({

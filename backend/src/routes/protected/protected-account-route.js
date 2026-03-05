@@ -132,8 +132,6 @@ protectedAccountRouter.get("/get-account", authentication, presentAccount);
  *                        type: string
  *                      status:
  *                        type: string
- *                      password:
- *                        type: string
  *                      create_at:
  *                        type: string
  *        "401":

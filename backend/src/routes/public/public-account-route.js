@@ -2,6 +2,7 @@ import express from "express";
 import {
   registerAccount,
   loginAccount,
+  refreshToken,
 } from "../../controllers/account-controller.js";
 
 export const publicAccountRouter = express.Router();
@@ -115,7 +116,7 @@ publicAccountRouter.post("/register", registerAccount);
  *                properties:
  *                  status:
  *                    type: integer
- *                  access-token:
+ *                  message:
  *                    type: string
  *        "401":
  *          content:
@@ -149,3 +150,53 @@ publicAccountRouter.post("/register", registerAccount);
  *                    type: string
  */
 publicAccountRouter.post("/login", loginAccount);
+
+/**
+ * @swagger
+ * /public/account/refresh:
+ *    post:
+ *      summary: ""
+ *      tags: [PUBLIC - AUTH]
+ *      responses:
+ *        "200":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: integer
+ *                  new_access_token:
+ *                    type: string
+ *        "401":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: integer
+ *                  message:
+ *                    type: string
+ *        "404":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: integer
+ *                  message:
+ *                    type: string
+ *        "500":
+ *          content:
+ *            application/json:
+ *              schema:
+ *                type: object
+ *                properties:
+ *                  status:
+ *                    type: integer
+ *                  message:
+ *                    type: string
+ */
+publicAccountRouter.post("/refresh", refreshToken);

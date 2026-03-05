@@ -11,7 +11,8 @@ const swaggerOptions = {
     info: {
       title: "Dokumentasi API Comics",
       version: "0.1.9",
-      description: "",
+      description:
+        "PROTECTED => Wajib login, perlu Authorization: Bearer `token` pada header, PUBLIC => Tidak perlu login.",
     },
     servers: [
       {

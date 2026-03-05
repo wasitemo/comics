@@ -115,32 +115,30 @@ publicProductRoute.get("/get-product", presentProduct);
  *                  status:
  *                    type: integer
  *                  data:
- *                    type: array
- *                    items:
- *                      type: object
- *                      properties:
- *                        product_id:
- *                          type: integer
- *                        account_id:
- *                          type: integer
- *                        product_title:
+ *                    type: object
+ *                    properties:
+ *                      product_id:
+ *                        type: integer
+ *                      account_id:
+ *                        type: integer
+ *                      product_title:
+ *                        type: string
+ *                      genre:
+ *                        type: array
+ *                        items:
  *                          type: string
- *                        genre:
- *                          type: array
- *                          items:
- *                            type: string
- *                        author:
- *                          type: string
- *                        release_date:
- *                          type: string
- *                        price:
- *                          type: string
- *                        sypnosis:
- *                          type: string
- *                        product_image_id:
- *                          type: string
- *                        product_image_url:
- *                          type: string
+ *                      author:
+ *                        type: string
+ *                      release_date:
+ *                        type: string
+ *                      price:
+ *                        type: string
+ *                      sypnosis:
+ *                        type: string
+ *                      product_image_id:
+ *                        type: string
+ *                      product_image_url:
+ *                        type: string
  *        "404":
  *          content:
  *            application/json:

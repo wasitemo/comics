@@ -107,24 +107,22 @@ publicBlogRouter.get("/get-blog", presentBlog);
  *                  status:
  *                    type: integer
  *                  data:
- *                    type: array
- *                    items:
- *                      type: object
- *                      properties:
- *                        blog_id:
- *                          type: integer
- *                        account_id:
- *                          type: integer
- *                        blog_title:
- *                          type: string
- *                        blog_content:
- *                          type: string
- *                        blog_image_id:
- *                          type: string
- *                        blog_image_url:
- *                          type: string
- *                        create_at:
- *                          type: string
+ *                    type: object
+ *                    properties:
+ *                      blog_id:
+ *                        type: integer
+ *                      account_id:
+ *                        type: integer
+ *                      blog_title:
+ *                        type: string
+ *                      blog_content:
+ *                        type: string
+ *                      blog_image_id:
+ *                        type: string
+ *                      blog_image_url:
+ *                        type: string
+ *                      create_at:
+ *                        type: string
  *        "404":
  *          content:
  *            application/json:

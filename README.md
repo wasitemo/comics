@@ -106,7 +106,7 @@ Anda harus membuat situs web yang terutama menyediakan dukungan pelanggan untuk 
 #### Clone Repository
 
 ```
-clone repository
+git clone https://github.com/wasitemo/comics.git
 cd backend
 ```
 

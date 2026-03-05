@@ -5,6 +5,7 @@ import { app } from "./app.js";
 import { connectDB, runMigration, pool } from "../src/config/database.js";
 
 let server;
+let port = process.env.PORT || 3000;
 
 process.on("uncaughtException", (err) => {
   logger.error("UNCHAUGHT EXCEPTION ", {
@@ -26,8 +27,8 @@ const start = async () => {
     await connectDB();
     await runMigration();
 
-    server = app.listen(process.env.PORT, () => {
-      logger.info(`Server running on port ${process.env.PORT}`);
+    server = app.listen(port, () => {
+      logger.info(`Server running on port ${port}`);
     });
   } catch (err) {
     logger.error("FAILED TO START APPLICATION ", {

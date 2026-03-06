@@ -34,7 +34,7 @@ Anda harus membuat situs web yang terutama menyediakan dukungan pelanggan untuk 
 
 ## Documentation
 
-`http://localhost:10000/public/api-docs`
+https://comics-2mkb.onrender.com/public/api-docs
 
 ## Environment Variable
 

@@ -30,13 +30,22 @@ export default function PublicLoginPage() {
         throw new Error(data.message || "Login failed");
       }
 
-      // Store token or handle successful login
-      if (data.token) {
+      // Store token and refresh token
+      // API returns 'access_token' not 'token'
+      if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+      } else if (data.token) {
         localStorage.setItem("token", data.token);
       }
+      
+      if (data.refresh_token) {
+        localStorage.setItem("refreshToken", data.refresh_token);
+      }
 
-      router.push("/");
+      // Redirect to private auth page
+      window.location.href = "/private/auth/";
     } catch (err) {
+      console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);

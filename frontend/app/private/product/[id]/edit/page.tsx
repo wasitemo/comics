@@ -109,13 +109,10 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
         const data = await response.json();
         const product: Product = data.data;
 
-        console.log("Product data:", product);
-
         setProductTitle(product.product_title);
         setAuthor(product.author);
         // Ensure release_date is in YYYY-MM-DD format for input type="date"
         const formattedDate = product.release_date ? product.release_date.split('T')[0] : '';
-        console.log("Release date:", product.release_date, "-> formatted:", formattedDate);
         setReleaseDate(formattedDate);
         setPrice(product.price);
         setSypnosis(product.sypnosis);
@@ -129,7 +126,6 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
               return found ? found.genre_id : null;
             })
             .filter((id): id is number => id !== null);
-          console.log("Selected genre IDs:", selectedGenreIds);
           setGenre(selectedGenreIds);
         }
       } catch (err) {
@@ -190,11 +186,6 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
         formData.append("image", image);
       }
 
-      console.log("Submitting formData:");
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-
       const response = await fetch(
         `https://comics-2mkb.onrender.com/protected/product/update-product/${id}`,
         {
@@ -207,7 +198,6 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
       );
 
       const data = await response.json();
-      console.log("Response:", data);
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -221,7 +211,6 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
 
       router.push("/private/product/");
     } catch (err) {
-      console.error("Update error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setLoading(false);

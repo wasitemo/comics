@@ -7,7 +7,7 @@ export default function Footer() {
 
         {/* Brand */}
         <div>
-          <h2 className="text-brand text-xl font-bold mb-4">
+          <h2 className="text-yellow-400 text-xl font-bold mb-4">
             Bronze Climate Emporium
           </h2>
           <p className="text-sm">
@@ -22,22 +22,17 @@ export default function Footer() {
           <h3 className="text-white font-semibold mb-4">Navigasi</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/" className="hover:text-brand transition">
+              <Link href="/" className="hover:text-yellow-400 transition">
                 Beranda
               </Link>
             </li>
             <li>
-              <Link href="/about" className="hover:text-brand transition">
-                Tentang Kami
-              </Link>
-            </li>
-            <li>
-              <Link href="/products" className="hover:text-brand transition">
+              <Link href="/public/products" className="hover:text-yellow-400 transition">
                 Produk
               </Link>
             </li>
             <li>
-              <Link href="/blog" className="hover:text-brand transition">
+              <Link href="/public/blog" className="hover:text-yellow-400 transition">
                 Blog
               </Link>
             </li>
@@ -49,19 +44,19 @@ export default function Footer() {
           <h3 className="text-white font-semibold mb-4">Bantuan</h3>
           <ul className="space-y-2">
             <li>
-              <Link href="/support" className="hover:text-brand transition">
-                FAQ
+              <Link href="/public/auth/login" className="hover:text-yellow-400 transition">
+                Login
               </Link>
             </li>
             <li>
-              <Link href="/support" className="hover:text-brand transition">
-                Hubungi Kami
+              <Link href="/public/auth/register" className="hover:text-yellow-400 transition">
+                Register
               </Link>
             </li>
             <li>
               <a
                 href="mailto:support@bronzeclimate.com"
-                className="hover:text-brand transition"
+                className="hover:text-yellow-400 transition"
               >
                 support@bronzeclimate.com
               </a>
@@ -73,13 +68,13 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-semibold mb-4">Ikuti Kami</h3>
           <div className="flex space-x-4">
-            <a href="#" className="hover:text-brand transition">
+            <a href="#" className="hover:text-yellow-400 transition">
               Facebook
             </a>
-            <a href="#" className="hover:text-brand transition">
+            <a href="#" className="hover:text-yellow-400 transition">
               Instagram
             </a>
-            <a href="#" className="hover:text-brand transition">
+            <a href="#" className="hover:text-yellow-400 transition">
               Twitter
             </a>
           </div>

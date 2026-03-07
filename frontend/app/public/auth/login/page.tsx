@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PublicLoginPage() {
   const router = useRouter();
@@ -31,19 +32,18 @@ export default function PublicLoginPage() {
       }
 
       // Store token and refresh token
-      // API returns 'access_token' not 'token'
       if (data.access_token) {
         localStorage.setItem("token", data.access_token);
       } else if (data.token) {
         localStorage.setItem("token", data.token);
       }
-      
+
       if (data.refresh_token) {
         localStorage.setItem("refreshToken", data.refresh_token);
       }
 
-      // Redirect to private auth page
-      window.location.href = "/private/auth/";
+      // Redirect to home page
+      router.push("/");
     } catch (err) {
       console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -56,9 +56,18 @@ export default function PublicLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Sign in to your account
-          </h1>
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Or{" "}
+            <Link
+              href="/public/auth/register"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              create a new account
+            </Link>
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">

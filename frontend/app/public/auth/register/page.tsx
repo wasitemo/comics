@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function PublicRegisterPage() {
   const router = useRouter();
@@ -36,6 +37,7 @@ export default function PublicRegisterPage() {
         throw new Error(data.message || "Registration failed");
       }
 
+      // Redirect to login after successful registration
       router.push("/public/auth/login");
     } catch (err) {
       setError(err instanceof Error ? err.message : "An error occurred");
@@ -48,9 +50,18 @@ export default function PublicRegisterPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div>
-          <h1 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Create your account
-          </h1>
+          </h2>
+          <p className="mt-2 text-center text-sm text-gray-600">
+            Already have an account?{" "}
+            <Link
+              href="/public/auth/login"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Sign in
+            </Link>
+          </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">

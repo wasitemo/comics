@@ -204,7 +204,7 @@ export const editProduct = async (request, file, accountId, productId) => {
           }
         } else if (product.genre.length === existingProduct.genres.length) {
           await deleteAllProductGenre(client, productResult.product_id);
-          await addProductGenre(client, productResult.product_id, key);
+          await addProductGenre(client, productId, key);
         }
       }
     } else {

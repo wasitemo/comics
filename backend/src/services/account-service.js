@@ -170,13 +170,20 @@ export const editAccount = async (request, accountId) => {
 
     const account = validation(updateAccountValidation, request);
     const existingAccount = await getAccountById(client, accountId);
+    const findPass = await findAccountByEmail(client, existingAccount.email);
 
     if (!existingAccount) {
       throw new ResponseError(404, "Data account tidak ditemukan");
     }
 
-    if (account.password) {
-      account.password = await bcrypt.hash(
+    let updatePass = findPass.password;
+
+    if (
+      account.password &&
+      account.password !== null &&
+      account.password !== undefined
+    ) {
+      updatePass = await bcrypt.hash(
         account.password,
         parseInt(process.env.SALT),
       );
@@ -185,7 +192,7 @@ export const editAccount = async (request, accountId) => {
     const data = {
       name: account.name ?? existingAccount.name,
       email: account.email ?? existingAccount.email,
-      password: account.password ?? existingAccount.password,
+      password: updatePass,
       status: account.status ?? existingAccount.status,
     };
 

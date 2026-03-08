@@ -2,8 +2,7 @@ import { pool } from "../config/database.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { validation } from "../validations/validate.js";
 import cloudinary from "../utils/cloudinary.js";
-import { getGenreById } from "../models/genre-model.js";
-import { getGenreAndId } from "../models/genre-model.js";
+import { getGenreAndId, findGenreIdByName } from "../models/genre-model.js";
 import {
   addProductValidation,
   upateProductValidation,
@@ -13,6 +12,7 @@ import {
   addProductGenre,
   updateProductGenre,
   deleteProductGenre,
+  deleteAllProductGenre,
 } from "../models/product-genre.js";
 import {
   getProduct,
@@ -159,7 +159,7 @@ export const editProduct = async (request, file, accountId, productId) => {
 
     if (product.genre) {
       for (const key of product.genre) {
-        const existingGenre = await getGenreById(client, key);
+        const existingGenre = await getGenreAndId(client, key);
         if (!existingGenre) {
           throw new ResponseError(404, "Data genre tidak ditemukan");
         }
@@ -202,18 +202,24 @@ export const editProduct = async (request, file, accountId, productId) => {
           for (let value of finalDeleteValue) {
             await deleteProductGenre(client, value, productResult.product_id);
           }
-        } else {
-          await updateProductGenre(client, key, productResult.product_id);
+        } else if (product.genre.length === existingProduct.genres.length) {
+          await deleteAllProductGenre(client, productResult.product_id);
+          await addProductGenre(client, productResult.product_id, key);
         }
       }
     } else {
-      for (const key of existingProduct.genre) {
-        const existingGenre = await getGenreById(client, key);
+      for (const key of existingProduct.genres) {
+        const existingGenre = await getGenreAndId(client, key);
         if (!existingGenre) {
           throw new ResponseError(404, "Data genre tidak ditemukan");
         }
 
-        await updateProductGenre(client, key, productResult.product_id);
+        const genreId = await findGenreIdByName(client, key);
+        await updateProductGenre(
+          client,
+          genreId.genre_id,
+          productResult.product_id,
+        );
       }
     }
 

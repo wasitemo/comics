@@ -92,3 +92,13 @@ export const getGenreAndId = async (db) => {
 
   return result;
 };
+
+export const findGenreIdByName = async (db, genre) => {
+  const query = await db.query(
+    "SELECT genre_id FROM genre WHERE LOWER(TRIM(genre)) = LOWER(TRIM($1))",
+    [genre],
+  );
+  const result = query.rows[0];
+
+  return result;
+};

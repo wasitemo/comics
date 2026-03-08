@@ -43,3 +43,9 @@ export const deleteProductGenre = async (db, genreId, productId) => {
     [genreId, productId],
   );
 };
+
+export const deleteAllProductGenre = async (db, productId) => {
+  await db.query("DELETE FROM product_genre WHERE product_id = $1", [
+    productId,
+  ]);
+};

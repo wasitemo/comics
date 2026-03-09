@@ -25,8 +25,8 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization", "Set-Cookie"],
   }),
 );
-app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.use(requestLogger);

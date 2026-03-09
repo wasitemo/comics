@@ -7,7 +7,7 @@ const devFormat = combine(
   timestamp(),
   errors({ stack: true }),
   printf(({ level, message, timestamp, stack }) => {
-    return `${timestamp} [${level}]: ${stack || message}`;
+    return `${timestamp} [${level}]: ${message} ${stack ? "\n" + stack : ""}`;
   }),
 );
 const prodFormat = combine(timestamp(), errors({ stack: true }), json());

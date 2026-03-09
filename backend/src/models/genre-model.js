@@ -102,3 +102,13 @@ export const findGenreIdByName = async (db, genre) => {
 
   return result;
 };
+
+export const findGenreIdById = async (db, genreId) => {
+  const query = await db.query(
+    "SELECT genre_id FROM genre WHERE genre_id = $1",
+    [genreId],
+  );
+  const result = query.rows[0];
+
+  return result;
+};

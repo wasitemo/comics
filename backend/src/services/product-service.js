@@ -2,7 +2,11 @@ import { pool } from "../config/database.js";
 import { ResponseError } from "../error/ResponseError.js";
 import { validation } from "../validations/validate.js";
 import cloudinary from "../utils/cloudinary.js";
-import { getGenreAndId, findGenreIdByName } from "../models/genre-model.js";
+import {
+  getGenreAndId,
+  findGenreIdByName,
+  findGenreIdById,
+} from "../models/genre-model.js";
 import {
   addProductValidation,
   upateProductValidation,
@@ -67,10 +71,6 @@ export const saveProduct = async (request, file, accountId) => {
   try {
     await client.query("BEGIN");
 
-    if (request.genre) {
-      request.genre = JSON.parse(request.genre);
-    }
-
     const product = validation(addProductValidation, request);
 
     product.release_date = product.release_date.toISOString().split("T")[0];
@@ -90,7 +90,7 @@ export const saveProduct = async (request, file, accountId) => {
     );
 
     for (let key of product.genre) {
-      const existingGenre = await getGenreById(client, key);
+      const existingGenre = await findGenreIdById(client, key);
       if (!existingGenre) {
         throw new ResponseError(404, "Data genre tidak ditemukan");
       }
@@ -126,100 +126,45 @@ export const saveProduct = async (request, file, accountId) => {
 
 export const editProduct = async (request, file, accountId, productId) => {
   const client = await pool.connect();
-  const existingProduct = await getProductById(client, productId);
-  let productResult;
+  let existingProduct;
+  let parsingDate;
 
   try {
     await client.query("BEGIN");
 
-    if (request.genre) {
-      request.genre = JSON.parse(request.genre);
-    }
-
     const product = validation(upateProductValidation, request);
+
+    existingProduct = await getProductById(client, productId);
 
     if (!existingProduct) {
       throw new ResponseError(404, "Data product tidak ditemukan");
     }
 
     if (product.release_date) {
-      product.release_date = product.release_date.toISOString().split("T")[0];
+      parsingDate = product.release_date.toISOString().split("T")[0];
     }
 
     const data = {
       account_id: accountId,
       product_title: product.product_title ?? existingProduct.product_title,
       author: product.author ?? existingProduct.author,
-      release_date: product.release_date ?? existingProduct.release_date,
+      release_date: parsingDate ?? existingProduct.release_date,
       price: product.price ?? existingProduct.price,
       sypnosis: product.sypnosis ?? existingProduct.sypnosis,
     };
 
-    productResult = await updateProduct(client, data, productId);
+    await updateProduct(client, data, productId);
 
     if (product.genre) {
-      for (const key of product.genre) {
-        const existingGenre = await getGenreAndId(client, key);
+      await deleteAllProductGenre(client, productId);
+
+      for (const genreId of product.genre) {
+        const existingGenre = await findGenreIdById(client, genreId);
         if (!existingGenre) {
           throw new ResponseError(404, "Data genre tidak ditemukan");
         }
 
-        if (product.genre.length > existingProduct.genres.length) {
-          const existingProductGenre = await getproductGenre(
-            client,
-            productResult.product_id,
-          );
-          const arrayProductGenre = existingProductGenre.map(
-            (data) => data.genre_id,
-          );
-          const inputValue1 = arrayProductGenre.filter(
-            (data) => !product.genre.includes(data),
-          );
-          const inputValue2 = product.genre.filter(
-            (data) => !arrayProductGenre.includes(data),
-          );
-          const finalInput = [...inputValue1, ...inputValue2];
-
-          for (let value of finalInput) {
-            await addProductGenre(client, productResult.product_id, value);
-          }
-        } else if (product.genre.length < existingProduct.genres.length) {
-          const existingProductGenre = await getproductGenre(
-            client,
-            productResult.product_id,
-          );
-          const arrayProductGenre = existingProductGenre.map(
-            (data) => data.genre_id,
-          );
-          const deleteValue1 = arrayProductGenre.filter(
-            (value) => !product.genre.includes(value),
-          );
-          const deleteValue2 = product.genre.filter(
-            (value) => !arrayProductGenre.includes(value),
-          );
-          const finalDeleteValue = [...deleteValue1, ...deleteValue2];
-
-          for (let value of finalDeleteValue) {
-            await deleteProductGenre(client, value, productResult.product_id);
-          }
-        } else if (product.genre.length === existingProduct.genres.length) {
-          await deleteAllProductGenre(client, productResult.product_id);
-          await addProductGenre(client, productId, key);
-        }
-      }
-    } else {
-      for (const key of existingProduct.genres) {
-        const existingGenre = await getGenreAndId(client, key);
-        if (!existingGenre) {
-          throw new ResponseError(404, "Data genre tidak ditemukan");
-        }
-
-        const genreId = await findGenreIdByName(client, key);
-        await updateProductGenre(
-          client,
-          genreId.genre_id,
-          productResult.product_id,
-        );
+        await addProductGenre(client, productId, genreId);
       }
     }
 
@@ -248,12 +193,7 @@ export const editProduct = async (request, file, accountId, productId) => {
       uploadImgUrl = uploadImg.secure_url;
     }
 
-    await updateImage(
-      pool,
-      uploadImgId,
-      uploadImgUrl,
-      productResult.product_id,
-    );
+    await updateImage(pool, uploadImgId, uploadImgUrl, productId);
   } catch (err) {
     throw err;
   }

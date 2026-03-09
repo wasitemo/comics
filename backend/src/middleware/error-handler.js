@@ -7,7 +7,7 @@ export const errorHandler = (err, req, res, next) => {
   const isOperational = err instanceof ResponseError;
 
   logger.error("Application Error", {
-    message: err.message,
+    errorMessage: err.message,
     stack: err.stack,
     method: req.method,
     url: req.originalUrl,

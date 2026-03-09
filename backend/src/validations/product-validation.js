@@ -6,7 +6,18 @@ export const addProductValidation = Joi.object({
   release_date: Joi.date().required(),
   price: Joi.number().required(),
   sypnosis: Joi.string().required(),
-  genre: Joi.array().items(Joi.number()).required(),
+  genre: Joi.alternatives()
+    .try(
+      Joi.array().items(Joi.number().integer()),
+      Joi.number().integer(),
+      Joi.string(),
+    )
+    .custom((value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value === "number") return [value];
+      return value.split(",").map(Number);
+    })
+    .required(),
 });
 
 export const upateProductValidation = Joi.object({
@@ -15,5 +26,15 @@ export const upateProductValidation = Joi.object({
   release_date: Joi.date(),
   price: Joi.number(),
   sypnosis: Joi.string(),
-  genre: Joi.array().items(Joi.number()),
+  genre: Joi.alternatives()
+    .try(
+      Joi.array().items(Joi.number().integer()),
+      Joi.number().integer(),
+      Joi.string(),
+    )
+    .custom((value) => {
+      if (Array.isArray(value)) return value;
+      if (typeof value === "number") return [value];
+      return value.split(",").map(Number);
+    }),
 });

@@ -32,6 +32,22 @@ Anda harus membuat situs web yang terutama menyediakan dukungan pelanggan untuk 
 - Migration
 - CRUD
 
+### Frontend
+1. Authentication
+   - Login form (mengirim email/password ke backend)
+   - Register form (membuat akun baru)
+   - Refresh token otomatis
+   - Logout
+2. CRUD
+   - Tampilan daftar data (list) dengan pagination offset
+   - Form untuk create / update
+   - Tombol delete dengan konfirmasi
+
+3. Tampilan / UI
+   - Halaman dashboard/home
+   - Navigasi sederhana
+   - Loading states / error messages
+
 ## Documentation
 
 https://comics-2mkb.onrender.com/public/api-docs
@@ -100,6 +116,27 @@ https://comics-2mkb.onrender.com/public/api-docs
 </table>
 
 ## Setup
+
+### Frontend
+
+#### Clone Repository
+
+```
+git clone https://github.com/wasitemo/comics
+cd frontend
+```
+
+#### Install Node Modules
+
+```
+npm install
+```
+
+#### Run Server
+
+```
+npm run dev
+```
 
 ### Backend
 

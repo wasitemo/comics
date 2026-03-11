@@ -101,6 +101,11 @@ export default function PrivateProductCreatePage() {
       return;
     }
 
+    if (!image) {
+      setError("Please select an image");
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -109,13 +114,15 @@ export default function PrivateProductCreatePage() {
       formData.append("product_title", productTitle);
       formData.append("author", author);
       formData.append("release_date", releaseDate);
-      formData.append("price", price.toString());
+      formData.append("price", price);
       formData.append("sypnosis", sypnosis);
       if (image) {
         formData.append("image", image);
       }
-      // Send genre as JSON string array
-      formData.append("genre", JSON.stringify(genre));
+      // Send genre as multiple genre[] entries
+      genre.forEach((id) => {
+        formData.append("genre[]", id.toString());
+      });
 
       const response = await fetch(
         "https://comics-2mkb.onrender.com/protected/product/add-product",

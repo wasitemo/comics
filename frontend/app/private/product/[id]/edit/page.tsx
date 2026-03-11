@@ -178,10 +178,12 @@ export default function PrivateProductEditPage({ params }: { params: { id: strin
       formData.append("product_title", productTitle);
       formData.append("author", author);
       formData.append("release_date", releaseDate);
-      formData.append("price", String(price));
+      formData.append("price", price);
       formData.append("sypnosis", sypnosis);
-      // Send genre as JSON string array
-      formData.append("genre", JSON.stringify(genre));
+      // Send genre as multiple genre[] entries
+      genre.forEach((id) => {
+        formData.append("genre[]", id.toString());
+      });
       if (image) {
         formData.append("image", image);
       }
